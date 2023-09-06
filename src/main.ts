@@ -9,5 +9,7 @@ async function bootstrap() {
   app.enableCors({
     origin: APP_ORIGIN,
   });
+
+  console.log(`APP is running on PORT: ${APP_PORT}`);
 }
 bootstrap();
