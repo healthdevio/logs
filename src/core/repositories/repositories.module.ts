@@ -1,4 +1,5 @@
 import { Module, Provider } from "@nestjs/common";
+import { DatabaseModule } from "../database/database.module";
 import { HealthRepository } from "./health/health.repository";
 import { PrismaHealthRepository } from "./health/prisma.health.repository";
 
@@ -10,5 +11,5 @@ const health: Provider[] = [
 ];
 const providers: Provider[] = [...health];
 
-@Module({ providers, exports: providers })
+@Module({ imports: [DatabaseModule], providers, exports: providers })
 export class RepositoriesModule {}

@@ -9,3 +9,41 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum Sources {
+  SAUDEHD_RECEPCAO
+}
+
+model Category {
+  id String @id @default(uuid())
+  description String 
+  fatherCategoryId String @map("father_category_id")
+  fatherCategory Category? @relation("ParentCategories", fields: [fatherCategoryId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  subCategories Category[] @relation("ParentCategories")
+  logs Log[] @relation("Category")
+  logsSubCategory Log[] @relation("SubCategory")
+
+  @@map("categories")
+
+}
+model Log {
+  id String @id @default(uuid())
+  category Category @relation("Category", fields: [categoryId], references: [id])
+  action String?
+  description String?
+  categoryId String @map("category_id")
+  objectId String? @map("object_id")
+  subCategory Category? @relation("SubCategory", fields: [subCategoryId], references: [id])
+  subCategoryId String? @map("sub_category_id")
+  userId String? @map("user_id")
+  username String 
+  userPersonName String @map("user_person_name")
+  source Sources
+  trackId String @map("track_id")
+  customData String? @map("custom_data")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("logs")
+}
