@@ -18,3 +18,5 @@ export class Log {
   customData?: string;
   createdAt: Date;
 }
+
+export type CreateLog = Omit<Log, "category" | "subCategory">;

@@ -1,7 +1,7 @@
+import { Sources } from "@prisma/client";
 import { IsIn, IsNotEmpty, IsOptional, IsUUID } from "class-validator";
 import { Stringfy } from "src/core/decorators/stringfy/stringfy.decorator";
 import { UpperCase } from "src/core/decorators/uppercase/uppercase.decorator";
-import { Sources } from "src/core/enums/sources";
 
 export class CreateEventDto {
   @IsNotEmpty()
@@ -20,7 +20,7 @@ export class CreateEventDto {
 
   @IsOptional()
   @IsIn(Object.values(Sources))
-  source: string;
+  source: Sources;
 
   @Stringfy()
   customData: string;

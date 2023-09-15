@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { AuthenticationService } from "src/core/authentication/authentication.service";
 import { CreateEventDto } from "src/core/models/dto/create-event.dto";
 import { FindCategoryByNameUseCase } from "src/core/use-cases/categories/find-by-name/find-category-by-name.use-case";
+import { CreateEventUseCase } from "src/core/use-cases/events/create/create-event.use-case";
 import { FindPersonByUserIdUseCase } from "src/core/use-cases/person/find-person-by-user-id/find-person-by-user-id.use-cases";
 
 @Injectable()
@@ -9,7 +10,8 @@ export class EventsService {
   constructor(
     private readonly auth: AuthenticationService,
     private readonly findPersonByUserIdUseCase: FindPersonByUserIdUseCase,
-    private readonly findCategoryByNameUseCase: FindCategoryByNameUseCase
+    private readonly findCategoryByNameUseCase: FindCategoryByNameUseCase,
+    private readonly createEventUseCase: CreateEventUseCase
   ) {}
 
   async createEvent({
@@ -46,11 +48,16 @@ export class EventsService {
       subCategoryId = id;
     }
 
-    return {
-      description,
-      userPersonName,
+    return this.createEventUseCase.execute({
+      action,
       categoryId,
+      customData,
+      objectId,
+      source,
+      userId,
       subCategoryId,
-    };
+      username,
+      userPersonName,
+    });
   }
 }
