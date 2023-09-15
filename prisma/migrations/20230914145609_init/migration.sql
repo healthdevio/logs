@@ -5,7 +5,7 @@ CREATE TYPE "Sources" AS ENUM ('SAUDEHD_RECEPCAO');
 CREATE TABLE "categories" (
     "id" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "father_category_id" TEXT NOT NULL,
+    "father_category_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 
@@ -23,7 +23,7 @@ CREATE TABLE "logs" (
     "user_id" TEXT,
     "username" TEXT NOT NULL,
     "user_person_name" TEXT NOT NULL,
-    "source" "Sources" NOT NULL,
+    "source" "Sources",
     "track_id" TEXT NOT NULL,
     "custom_data" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -32,7 +32,7 @@ CREATE TABLE "logs" (
 );
 
 -- AddForeignKey
-ALTER TABLE "categories" ADD CONSTRAINT "categories_father_category_id_fkey" FOREIGN KEY ("father_category_id") REFERENCES "categories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "categories" ADD CONSTRAINT "categories_father_category_id_fkey" FOREIGN KEY ("father_category_id") REFERENCES "categories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "logs" ADD CONSTRAINT "logs_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "categories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
