@@ -65,6 +65,7 @@ export class PrismaEventsRepository implements EventsRepository {
       skip: filter?.skip,
       take: filter?.take,
       select: filter?.select,
+      orderBy: filter.orderBy,
     });
   }
 

@@ -32,7 +32,12 @@ export class ListEventsUseCase {
     const total = await this.eventsRepository.count({
       where,
     });
-    const rows = await this.eventsRepository.list({ where, skip, take });
+    const rows = await this.eventsRepository.list({
+      where,
+      skip,
+      take,
+      orderBy: { createdAt: "desc" },
+    });
 
     return { total, rows };
   }
