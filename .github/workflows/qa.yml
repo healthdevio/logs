@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  SERVER_ADDRESS: hml.api.saudehd.com.br
+  SERVER_ADDRESS: qa.api.saudehd.com.br
   SERVICE_NAME: logs
   SERVICE_PORT: 8095
   ENVIRONMENT_BUCKET_NAME: saudehd-environments
