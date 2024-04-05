@@ -6,7 +6,6 @@ import { BusinessExceptionFilter } from "./core/exception/business-exception/bus
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(APP_PORT);
 
   app.useGlobalFilters(new BusinessExceptionFilter());
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
@@ -15,6 +14,7 @@ async function bootstrap() {
     origin: true,
   });
 
+  await app.listen(APP_PORT);
   console.log(`APP is running on PORT: ${APP_PORT} 🚀`);
 }
 bootstrap();
