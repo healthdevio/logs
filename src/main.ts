@@ -1,7 +1,7 @@
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { APP_ORIGIN, APP_PORT } from "./core/constants/environment";
+import { APP_PORT } from "./core/constants/environment";
 import { BusinessExceptionFilter } from "./core/exception/business-exception/business-exception-filter";
 
 async function bootstrap() {
@@ -12,7 +12,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   app.enableCors({
-    origin: APP_ORIGIN,
+    origin: true,
   });
 
   console.log(`APP is running on PORT: ${APP_PORT} 🚀`);

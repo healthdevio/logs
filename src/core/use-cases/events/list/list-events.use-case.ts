@@ -6,6 +6,13 @@ import { Log } from "src/core/models/entities/log";
 import { CategoryRepository } from "src/core/repositories/category/category.repository";
 import { EventsRepository } from "src/core/repositories/event/events.repository";
 
+/**
+ * This class now lists only:
+ * For object id
+ * For a specific category
+ * This have to be improved before, for now is ok
+ */
+
 @Injectable()
 export class ListEventsUseCase {
   constructor(
