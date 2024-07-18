@@ -12,6 +12,7 @@ datasource db {
 
 enum Sources {
   RECEPTION
+  BOT_EVENT
 }
 
 model Category {
