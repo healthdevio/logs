@@ -44,7 +44,7 @@ model Log {
   source Sources?
   trackId String @map("track_id")
   customData String? @map("custom_data")
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
 
   @@map("logs")
 }
