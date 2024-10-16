@@ -13,6 +13,7 @@ datasource db {
 enum Sources {
   RECEPTION
   BOT_EVENT
+  FINANCIAL
 }
 
 model Category {
