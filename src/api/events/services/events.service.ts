@@ -54,6 +54,7 @@ export class EventsService {
       const { id } = await this.findCategoryByNameUseCase.execute(subCategory);
       subCategoryId = id;
     }
+    //redeploy
 
     return this.createEventUseCase.execute({
       action,
