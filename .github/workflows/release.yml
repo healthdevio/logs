@@ -3,7 +3,7 @@ name: SSH Deploy
 on:
   push:
     branches:
-      - release  # Defina a branch na qual deseja acionar o deploy
+      - release  # Defina a branch na qual deseja acionar o deploy teste
 
 env:
   AWS_REGION: us-east-1
