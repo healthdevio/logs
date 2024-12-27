@@ -3,7 +3,7 @@ name: SSH Deploy
 on:
   push:
     branches:
-      - release-vr
+      - release
       
 env:
   SERVER_ADDRESS: 216.238.115.174
