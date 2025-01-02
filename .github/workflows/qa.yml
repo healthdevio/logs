@@ -3,7 +3,7 @@ name: SSH Deploy
 on:
   push:
     branches:
-      - main  # Defina a branch na qual deseja acionar o deploy
+      - main-backup  # Defina a branch na qual deseja acionar o deploy
 
 env:
   AWS_REGION: us-east-1

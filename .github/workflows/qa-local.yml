@@ -1,0 +1,59 @@
+name: SSH Deploy
+
+on:
+  push:
+    branches:
+      - main
+      
+env:
+  SERVER_ADDRESS: 191.241.37.120
+  SERVICE_NAME: logs
+  SERVICE_PORT: 7006
+  ENVIRONMENT_BUCKET_NAME: saudehd-environments
+  ENVIRONMENT: qa
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up SSH key
+      uses: webfactory/ssh-agent@v0.4.1
+      with:
+        ssh-private-key: ${{ secrets.CAUCAIA_SSH_PRIVATE_KEY }}
+
+    - name: Set REPOSITORY
+      run: |
+        # Concatenar variáveis e definir uma nova variável
+        REPOSITORY="vr-saudehd-${SERVICE_NAME}"
+        echo "REPOSITORY=${REPOSITORY}" >> $GITHUB_ENV
+        #ENV_FILE
+        ENV_FILE=".$SERVICE_NAME.env"
+        echo "ENV_FILE=${ENV_FILE}" >> $GITHUB_ENV
+  
+
+    - name: Build, tag, and push image to vulrR Registry
+      id: build-image
+      env:
+        IMAGE_TAG: latest
+      run: |
+        docker login https://${{ secrets.VR_REGISTRY }} -u ${{ secrets.VR_REGISTRY_USERNAME }} -p ${{ secrets.VR_REGISTRY_PASS }}
+        docker build -t $REPOSITORY:$IMAGE_TAG .
+        docker tag $REPOSITORY:$IMAGE_TAG ${{ secrets.VR_REGISTRY }}/$REPOSITORY:$IMAGE_TAG
+        docker push ${{ secrets.VR_REGISTRY }}/$REPOSITORY:$IMAGE_TAG
+
+    - name: Connect to SSH and deploy
+      env:
+        IMAGE_TAG: latest
+      run: |
+          ssh -o StrictHostKeyChecking=no -i $SSH_AUTH_SOCK -p 3000 s4s@$SERVER_ADDRESS 'bash -s' << 'ENDSSH'
+            docker login https://${{ secrets.VR_REGISTRY }} -u ${{ secrets.VR_REGISTRY_USERNAME }} -p ${{ secrets.VR_REGISTRY_PASS }}
+            docker rmi -f ${{ secrets.VR_REGISTRY }}/${{env.REPOSITORY}}:${{env.IMAGE_TAG}}
+            docker rm -f ${{env.SERVICE_NAME}}
+            rm -rf $ENV_FILE
+            aws s3 cp s3://${{env.ENVIRONMENT_BUCKET_NAME}}/${{env.ENVIRONMENT}}/${{env.ENV_FILE}} ./environments/
+            docker run --name ${{env.SERVICE_NAME}} -d -p ${{env.SERVICE_PORT}}:80 --network ${{env.ENVIRONMENT}} --env-file=./environments/${{env.ENV_FILE}} ${{ secrets.VR_REGISTRY }}/${{env.REPOSITORY}}:${{env.IMAGE_TAG}}
+          ENDSSH
