@@ -3,14 +3,14 @@ name: SSH Deploy
 on:
   push:
     branches:
-      - main
+      - release
       
 env:
-  SERVER_ADDRESS: 191.241.37.120
+  SERVER_ADDRESS: 216.238.115.174
   SERVICE_NAME: logs
   SERVICE_PORT: 7006
+  ENVIRONMENT: prod
   ENVIRONMENT_BUCKET_NAME: saudehd-environments
-  ENVIRONMENT: qa
 
 jobs:
   deploy:
@@ -23,7 +23,7 @@ jobs:
     - name: Set up SSH key
       uses: webfactory/ssh-agent@v0.4.1
       with:
-        ssh-private-key: ${{ secrets.CAUCAIA_SSH_PRIVATE_KEY }}
+        ssh-private-key: ${{ secrets.SSH_VR_PRIVATE_KEY }}
 
     - name: Set REPOSITORY
       run: |
@@ -49,11 +49,11 @@ jobs:
       env:
         IMAGE_TAG: latest
       run: |
-          ssh -o StrictHostKeyChecking=no -i $SSH_AUTH_SOCK -p 3000 s4s@$SERVER_ADDRESS 'bash -s' << 'ENDSSH'
+          ssh -o StrictHostKeyChecking=no -i $SSH_AUTH_SOCK root@$SERVER_ADDRESS 'bash -s' << 'ENDSSH'
             docker login https://${{ secrets.VR_REGISTRY }} -u ${{ secrets.VR_REGISTRY_USERNAME }} -p ${{ secrets.VR_REGISTRY_PASS }}
             docker rmi -f ${{ secrets.VR_REGISTRY }}/${{env.REPOSITORY}}:${{env.IMAGE_TAG}}
             docker rm -f ${{env.SERVICE_NAME}}
             rm -rf $ENV_FILE
-            aws s3 cp s3://${{env.ENVIRONMENT_BUCKET_NAME}}/${{env.ENVIRONMENT}}/${{env.ENV_FILE}} ./environments/
-            docker run --name ${{env.SERVICE_NAME}} -d -p ${{env.SERVICE_PORT}}:80 --network ${{env.ENVIRONMENT}} --env-file=./environments/${{env.ENV_FILE}} ${{ secrets.VR_REGISTRY }}/${{env.REPOSITORY}}:${{env.IMAGE_TAG}}
+            aws s3 cp s3://${{env.ENVIRONMENT_BUCKET_NAME}}/${{env.ENVIRONMENT}}/${{env.ENV_FILE}} ./
+            docker run --name ${{env.SERVICE_NAME}} -d -p ${{env.SERVICE_PORT}}:80 --network ${{env.ENVIRONMENT}} --env-file=${{env.ENV_FILE}} ${{ secrets.VR_REGISTRY }}/${{env.REPOSITORY}}:${{env.IMAGE_TAG}}
           ENDSSH
