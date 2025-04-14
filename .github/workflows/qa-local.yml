@@ -6,7 +6,7 @@ on:
       - main
       
 env:
-  SERVER_ADDRESS: 191.241.37.120
+  SERVER_ADDRESS: qa.api.saudehd.com.br
   SERVICE_NAME: logs
   SERVICE_PORT: 7006
   ENVIRONMENT_BUCKET_NAME: saudehd-environments
