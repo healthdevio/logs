@@ -16,7 +16,6 @@ enum Sources {
   FINANCIAL
   PEP
 }
-
 model Category {
   id String @id @default(uuid())
   description String 
