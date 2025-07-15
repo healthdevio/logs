@@ -15,6 +15,7 @@ enum Sources {
   BOT_EVENT
   FINANCIAL
   PEP
+  PORTAL_WEB
 }
 
 model Category {
