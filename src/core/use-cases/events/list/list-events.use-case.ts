@@ -19,9 +19,21 @@ export class ListEventsUseCase {
     private readonly eventsRepository: EventsRepository,
     private readonly categoryRepository: CategoryRepository
   ) {}
-  public async execute({ category, objectId, page, size }: FilterEventDto) {
+  public async execute({ category, objectId, page, size, isScheduling }: FilterEventDto) {
+    let objectIds: string[] = [ objectId ]
+
+    // buscar as mudanças da vigência relacionada ao agendamento 
+    if(isScheduling){
+      const validity = await this.eventsRepository.findSchedulingValidity(objectId)
+      if(validity){
+        objectIds.push(validity.id)
+      }
+    }
+
     const where: Where<Log> = {
-      AND: [{ objectId }],
+      AND: [{ objectId:{
+        in: objectIds
+      } }],
     };
 
     if (category) {

@@ -2,12 +2,14 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["logs", "healthdev"]
 }
 
 enum Sources {
@@ -16,38 +18,125 @@ enum Sources {
   FINANCIAL
   PEP
   PORTAL_WEB
+
+  @@schema("logs")
 }
 
 model Category {
-  id String @id @default(uuid())
-  description String 
-  fatherCategoryId String? @map("father_category_id")
-  fatherCategory Category? @relation("ParentCategories", fields: [fatherCategoryId], references: [id])
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
-  subCategories Category[] @relation("ParentCategories")
-  logs Log[] @relation("Category")
-  logsSubCategory Log[] @relation("SubCategory")
+  id               String     @id @default(uuid())
+  description      String
+  fatherCategoryId String?    @map("father_category_id")
+  fatherCategory   Category?  @relation("ParentCategories", fields: [fatherCategoryId], references: [id])
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime?  @updatedAt @map("updated_at")
+  subCategories    Category[] @relation("ParentCategories")
+  logs             Log[]      @relation("Category")
+  logsSubCategory  Log[]      @relation("SubCategory")
 
   @@map("categories")
-
+  @@schema("logs")
 }
+
 model Log {
-  id String @id @default(uuid())
-  category Category @relation("Category", fields: [categoryId], references: [id])
-  action String?
-  description String?
-  categoryId String @map("category_id")
-  objectId String? @map("object_id")
-  subCategory Category? @relation("SubCategory", fields: [subCategoryId], references: [id])
-  subCategoryId String? @map("sub_category_id")
-  userId String? @map("user_id")
-  username String 
-  userPersonName String @map("user_person_name")
-  source Sources?
-  trackId String @map("track_id")
-  customData String? @map("custom_data")
-  createdAt DateTime @default(now()) @db.Timestamptz(6) @map("created_at")
+  id             String    @id @default(uuid())
+  category       Category  @relation("Category", fields: [categoryId], references: [id])
+  action         String?
+  description    String?
+  categoryId     String    @map("category_id")
+  objectId       String?   @map("object_id")
+  subCategory    Category? @relation("SubCategory", fields: [subCategoryId], references: [id])
+  subCategoryId  String?   @map("sub_category_id")
+  userId         String?   @map("user_id")
+  username       String
+  userPersonName String    @map("user_person_name")
+  source         Sources?
+  trackId        String    @map("track_id")
+  customData     String?   @map("custom_data")
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@map("logs")
+  @@schema("logs")
+}
+
+model ShiftValidity {
+  id               String     @id @default(uuid())
+  startDate        DateTime   @map("start_date") @db.Date
+  endDate          DateTime   @map("end_date") @db.Date
+  createdAt        DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdBy        String     @map("created_by")
+  active           Boolean    @default(true)
+  shiftId          String     @map("shift_id")
+  specialityId     String?    @map("speciality_id")
+  procedureId      String?    @map("procedure_id")
+  notificationType String?    @map("notification_type") @db.VarChar
+  schedule         Schedule[]
+
+  @@map("shift_validities")
+  @@schema("healthdev")
+}
+
+model Schedule {
+  id                       String       @id @default(uuid())
+  date                     DateTime     @db.Date
+  active                   Boolean      @default(true)
+  professionalId           String?      @map("professional_id")
+  serviceLocationId        String       @map("service_location_id")
+  interval                 DateTime?    @map("interval") @db.Timetz
+  specialityId             String?      @map("speciality_id")
+  professionalShiftId      String?      @map("professional_shift_id")
+  serviceLocationShiftId   String?      @map("service_location_shift_id")
+  createdAt                DateTime     @map("created_at") @db.Timestamptz(6)
+  validityId               String?      @map("validity_id")
+  scheduleNotificationType String       @default("DONT_NOTIFICATE") @map("schedule_notification_type")
+  idImport                 String?      @map("id_import")
+  nameImport               String?      @map("name_import")
+  contractImport           String?      @map("contract_import")
+  specialitieContractId    String?      @map("specialitie_contract_id")
+  scheduling               Scheduling[]
+
+  validity ShiftValidity? @relation(fields: [validityId], references: [id])
+
+  @@map("schedules")
+  @@schema("healthdev")
+}
+
+model Scheduling {
+  id                                 String    @id @default(uuid())
+  time                               String
+  observation                        String?   @db.VarChar(500)
+  schedulingDate                     DateTime? @map("scheduling_date")
+  scheduleId                         String    @map("schedule_id")
+  specialityId                       String?   @map("speciality_id")
+  clientId                           String?   @map("client_id")
+  active                             Boolean   @default(true)
+  arrivalTime                        String?   @map("arrival_time")
+  serviceRegime                      String?   @map("service_regime") @db.VarChar(1)
+  serviceTypeId                      String?   @map("service_type_id")
+  newborn                            Boolean?
+  guideId                            String?   @map("guide_id")
+  statusId                           String    @map("status_id")
+  createdAt                          DateTime  @map("created_at")
+  clientConventionId                 String?   @map("client_convention_id")
+  checkinId                          String?   @map("checkin_id")
+  paid                               Boolean   @default(false)
+  accidentIndicatorId                String?   @map("accident_indicator_id")
+  consultationTypeId                 String?   @map("consultation_type_id")
+  embedded                           Boolean   @default(false)
+  sourceId                           Int?      @map("source_id")
+  aso                                Boolean   @default(false)
+  scheduledAt                        DateTime? @map("scheduled_at")
+  notificationType                   String    @default("DONT_NOTIFICATE") @map("notification_type")
+  timeInMinutes                      Int?      @map("time_in_minutes")
+  password                           String?   @db.VarChar(200)
+  parentSchedulingId                 String?   @map("parent_scheduling_id")
+  accountReceivableIdCloseProduction String?   @map("account_receivable_id_close_production")
+  priorityType                       String?
+  consultationTypeContractId         String?   @map("consultation_type_contract_id")
+  specialitieContractId              String?   @map("specialitie_contract_id")
+  userLockingId                      String?   @map("user_locking_id")
+
+  schedule Schedule @relation(fields: [scheduleId], references: [id])
+
+  @@map("schedulings")
+  @@schema("healthdev")
 }
