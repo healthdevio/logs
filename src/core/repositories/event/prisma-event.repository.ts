@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { ShiftValidity } from "@prisma/client";
 import { PrismaService } from "src/core/database/services/prisma/prisma.service";
 import { DbQueryFilter } from "src/core/models/dto/db-query.filter";
 import { CreateLog, Log } from "src/core/models/entities/log";
@@ -73,5 +74,21 @@ export class PrismaEventsRepository implements EventsRepository {
     filter?: DbQueryFilter<Omit<Log, "category" | "subCategory">>
   ): Promise<number> {
     return this.prisma.log.count({ where: filter?.where });
+  }
+
+  async findSchedulingValidity(schedulingId: string): Promise<ShiftValidity> {
+    return await this.prisma.shiftValidity.findFirst({
+      where:{
+        schedule:{
+          some:{
+            scheduling:{
+              some:{
+                id: schedulingId
+              }
+            }
+          }
+        }
+      }
+    })
   }
 }

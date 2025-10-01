@@ -17,8 +17,8 @@ export class EventsService {
     private readonly listEventsUseCase: ListEventsUseCase
   ) {}
 
-  async listEvents({ category, objectId, page, size }: FilterEventDto) {
-    return this.listEventsUseCase.execute({ category, objectId, page, size });
+  async listEvents({ category, objectId, page, size, isScheduling }: FilterEventDto) {
+    return this.listEventsUseCase.execute({ category, objectId, page, size, isScheduling });
   }
 
   async createEvent({
