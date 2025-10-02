@@ -39,9 +39,9 @@ export class ListEventsUseCase {
           },
           {
             objectId: scheduling?.schedule?.validity?.id,
-            createdAt: {
+            createdAt: scheduling?.scheduledAt ? {
               lt: scheduling?.scheduledAt
-            }
+            } : undefined
           }
         ]
       }],
