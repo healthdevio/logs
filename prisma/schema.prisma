@@ -102,7 +102,7 @@ model Schedule {
 
 model Scheduling {
   id                                 String    @id @default(uuid())
-  time                               String
+  time                               DateTime
   observation                        String?   @db.VarChar(500)
   schedulingDate                     DateTime? @map("scheduling_date")
   scheduleId                         String    @map("schedule_id")
@@ -130,7 +130,7 @@ model Scheduling {
   password                           String?   @db.VarChar(200)
   parentSchedulingId                 String?   @map("parent_scheduling_id")
   accountReceivableIdCloseProduction String?   @map("account_receivable_id_close_production")
-  priorityType                       String?
+  priorityType                       String?   @map("priority_type")
   consultationTypeContractId         String?   @map("consultation_type_contract_id")
   specialitieContractId              String?   @map("specialitie_contract_id")
   userLockingId                      String?   @map("user_locking_id")
