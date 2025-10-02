@@ -22,18 +22,29 @@ export class ListEventsUseCase {
   public async execute({ category, objectId, page, size, isScheduling }: FilterEventDto) {
     let objectIds: string[] = [ objectId ]
 
-    // buscar as mudanças da vigência relacionada ao agendamento 
-    if(isScheduling){
-      const validity = await this.eventsRepository.findSchedulingValidity(objectId)
-      if(validity){
-        objectIds.push(validity.id)
+    // se for agendamento, buscar as mudanças da vigência relacionada ao agendamento 
+    let scheduling: Awaited<ReturnType<typeof this.eventsRepository.findScheduling>> | undefined;
+    if (isScheduling) {
+      scheduling = await this.eventsRepository.findScheduling(objectId)
+      if(scheduling){
+        objectIds.push(scheduling.schedule.validity.id)
       }
     }
 
     const where: Where<Log> = {
-      AND: [{ objectId:{
-        in: objectIds
-      } }],
+      AND: [{ 
+        OR:[
+          {
+            objectId,
+          },
+          {
+            objectId: scheduling?.schedule?.validity?.id,
+            createdAt: {
+              lt: scheduling?.scheduledAt
+            }
+          }
+        ]
+      }],
     };
 
     if (category) {
